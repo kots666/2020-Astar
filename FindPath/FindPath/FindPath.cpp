@@ -24,6 +24,10 @@ int Node::GetFScore() const {
 	return fScore;
 }
 
+int Node::GetHScore() const {
+	return hScore;
+}
+
 Point Node::GetPoint() {
 	return nodePoint;
 }
@@ -52,7 +56,8 @@ void AStar::AddToOpenList(Node* n) {
 
 Node* AStar::AddToCloseList() {
 	if (OpenList.empty()) {
-		std::cout << "길을 찾을 수 없습니다.\n";
+		std::cout << "\n길을 찾을 수 없습니다.\n목적지와 가장 가까운 길까지를 표시합니다.\n";
+		isLockedIn = true;
 		return nullptr;
 	}
 	auto it = OpenList.begin();
@@ -84,17 +89,52 @@ void AStar::FindPath() {
 
 	RecursiveFindPath(n);
 
-	Point changePoint;
-	Node* nextParent = nullptr;
+	Point nowPoint;
+	Point parentPoint;
 	auto p = CloseList.rbegin();
-	nextParent = (*p)->GetParentNode();
+	parentPoint = (*p)->GetParentNode()->GetPoint();
 
-	for (; p != CloseList.rend(); ++p) {
-		changePoint = (*p)->GetPoint();
-		if (IsOverlapped(changePoint, nextParent->GetPoint())) {
-			if (map[changePoint.y][changePoint.x] != STARTPOINT && map[changePoint.y][changePoint.x] != ENDPOINT) {
-				map[changePoint.y][changePoint.x] = FINDROAD;
-				nextParent = (*p)->GetParentNode();
+	if (isLockedIn) {
+		auto p = CloseList.begin();
+		++p;
+		int min = (*p)->GetHScore();
+		Point minPoint = (*p)->GetPoint();
+
+		while (p != CloseList.end()) {
+			if (min > (*p)->GetHScore()) {
+				min = (*p)->GetHScore();
+				minPoint = (*p)->GetPoint();
+			}
+			++p;
+		}
+		
+		for (auto k = CloseList.rbegin(); k != CloseList.rend(); ++k) {
+			if (IsOverlapped(minPoint, (*k)->GetPoint())) {
+				if (map[minPoint.y][minPoint.x] != STARTPOINT && map[minPoint.y][minPoint.x] != ENDPOINT) {
+					map[minPoint.y][minPoint.x] = FINDROAD;
+					if ((*k)->GetParentNode() == nullptr) break;
+					minPoint = (*k)->GetParentNode()->GetPoint();
+				}
+			}
+		}
+
+	}
+
+	else {
+		Point nowPoint;
+		Point parentPoint;
+		auto p = CloseList.rbegin();
+		parentPoint = (*p)->GetParentNode()->GetPoint();
+
+
+		for (; p != CloseList.rend(); ++p) {
+			nowPoint = (*p)->GetPoint();
+			if (IsOverlapped(nowPoint, parentPoint)) {
+				if (map[nowPoint.y][nowPoint.x] != STARTPOINT && map[nowPoint.y][nowPoint.x] != ENDPOINT) {
+					map[nowPoint.y][nowPoint.x] = FINDROAD;
+					if ((*p)->GetParentNode() == nullptr) break;
+					parentPoint = (*p)->GetParentNode()->GetPoint();
+				}
 			}
 		}
 	}
@@ -122,6 +162,7 @@ AStar::AStar() {
 	Direction[LEFT] = Point(-1, 0);
 	Direction[RIGHT] = Point(1, 0);
 	count = 0;
+	isLockedIn = false;
 }
 
 void AStar::MakeMap(char ** m, int num, const Point & start, const Point & end) {

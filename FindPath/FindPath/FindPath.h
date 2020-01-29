@@ -29,6 +29,7 @@ public:
 	Node(Point nP, Node* parent, const Point& start, const Point& end);
 
 	int GetFScore() const;
+	int GetHScore() const;
 	Point GetPoint();
 	Node* GetParentNode();
 
@@ -44,6 +45,7 @@ private:
 	Point startPoint;
 	Point endPoint;
 	int count;
+	bool isLockedIn;
 
 	void AddToOpenList(Node* n);
 	Node* AddToCloseList();
