@@ -1,7 +1,7 @@
 #include "FindPath.h"
 #include <iostream>
 
-Point::Point(int i, int k) : x(i), y(k) {}
+Point::Point(int xValue, int yValue) : x(xValue), y(yValue) {}
 
 Point& Point::operator+(Point& rhs) {
 	x += rhs.x;
@@ -14,7 +14,7 @@ bool Point::operator==(Point& rhs) {
 	return false;
 }
 
-Node::Node(Point nP, Node* parent, const Point& start, const Point& end) : nodePoint(nP), parentNode(parent) {
+Node::Node(Point atPoint, Node* parent, const Point& start, const Point& end) : nodePoint(atPoint), parentNode(parent) {
 	gScore = ((start.x > nodePoint.x) ? start.x - nodePoint.x : nodePoint.x - start.x) + ((start.y > nodePoint.y) ? start.y - nodePoint.y : nodePoint.y - start.y);
 	hScore = ((end.x > nodePoint.x) ? end.x - nodePoint.x : nodePoint.x - end.x) + ((end.y > nodePoint.y) ? end.y - nodePoint.y : nodePoint.y - end.y);
 	fScore = gScore + hScore;
