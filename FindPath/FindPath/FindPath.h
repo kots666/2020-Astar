@@ -16,7 +16,7 @@ struct Point {
 	Point() = default;
 	Point(int xValue, int yValue);
 	Point& operator +(Point& rhs);
-	bool operator ==(Point& rhs);
+	bool operator ==(const Point& rhs) const;
 };
 
 // OpenList와 CloseList에 들어갈 Node
@@ -64,5 +64,3 @@ public:
 
 	~AStar();
 };
-
-bool IsOverlapped(const Point& lhs, const Point& rhs);

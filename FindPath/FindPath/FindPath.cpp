@@ -9,7 +9,7 @@ Point& Point::operator+(Point& rhs) {
 	return *this;
 }
 
-bool Point::operator==(Point& rhs) {
+bool Point::operator==(const Point& rhs) const {
 	if (x == rhs.x && y == rhs.y) return true;
 	return false;
 }
@@ -42,11 +42,11 @@ void Node::SwapNode(Node* other) {
 
 void AStar::AddToOpenList(Node* n) {
 	for (auto it : CloseList) {
-		if (IsOverlapped(it->GetPoint(), n->GetPoint())) return;
+		if (it->GetPoint() == n->GetPoint()) return;
 	}
 
 	for (auto it : OpenList) {
-		if (IsOverlapped(it->GetPoint(), n->GetPoint())) {
+		if (it->GetPoint() == n->GetPoint()) {
 			if (it->GetFScore() > n->GetFScore()) it->SwapNode(n);
 			return;
 		}
@@ -109,7 +109,7 @@ void AStar::FindPath() {
 		}
 		
 		for (auto k = CloseList.rbegin(); k != CloseList.rend(); ++k) {
-			if (IsOverlapped(minPoint, (*k)->GetPoint())) {
+			if (minPoint == (*k)->GetPoint()) {
 				if (map[minPoint.y][minPoint.x] != STARTPOINT && map[minPoint.y][minPoint.x] != ENDPOINT) {
 					map[minPoint.y][minPoint.x] = FINDROAD;
 					if ((*k)->GetParentNode() == nullptr) break;
@@ -129,7 +129,7 @@ void AStar::FindPath() {
 
 		for (; p != CloseList.rend(); ++p) {
 			nowPoint = (*p)->GetPoint();
-			if (IsOverlapped(nowPoint, parentPoint)) {
+			if (nowPoint == parentPoint) {
 				if (map[nowPoint.y][nowPoint.x] != STARTPOINT && map[nowPoint.y][nowPoint.x] != ENDPOINT) {
 					map[nowPoint.y][nowPoint.x] = FINDROAD;
 					if ((*p)->GetParentNode() == nullptr) break;
@@ -141,7 +141,7 @@ void AStar::FindPath() {
 }
 
 void AStar::RecursiveFindPath(Node* n) {
-	if (IsOverlapped(n->GetPoint(), endPoint)) return;
+	if (n->GetPoint() == endPoint) return;
 
 	for (int i = 0; i < 4; ++i) {
 		Point tempPoint = n->GetPoint();
@@ -187,9 +187,4 @@ AStar::~AStar() {
 		}
 		CloseList.clear();
 	}
-}
-
-bool IsOverlapped(const Point& lhs, const Point& rhs) {
-	if (lhs.x == rhs.x && lhs.y == rhs.y) return true;
-	return false;
 }
